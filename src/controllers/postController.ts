@@ -54,6 +54,10 @@ class UserController {
             return response.json({error:true, message: 'An unexpected error occurred'})
         })
     }
-    
+    async list(request: Request, response: Response){
+        const posts = await Post.find({user_id: {$in: request.body.following}}).sort({createdAt: -1});
+        
+        return response.json({posts})
+    }
 }
 export default new UserController();

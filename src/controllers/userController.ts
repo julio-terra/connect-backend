@@ -74,11 +74,33 @@ class UserController {
         return response.json({user: newUser})
     }
     async updateBody(request: Request, response: Response){
-        const user = await User.findByIdAndUpdate(request.params?.id, {
+        if(request.body.userName){
+            const userExistis = await User.findOne({userName: request.body.userName});
+            if(userExistis){
+                return response.json({error: true, message: "this username is already in use"})
+            }
+        }
+        User.findByIdAndUpdate(request.params?.id, {
             ...request.body
+        }).then(async () =>{
+            const newuser = await User.findOne({_id: request.params.id});
+            return response.json({message: 'Done!', user: newuser})
+        }).catch(() => {
+           return response.json({error: true, message: "An unexpected error occurred"})
         })
-        const newUser = await User.findById(user?.id)
-        return response.json({user: newUser})
+    }
+    async users(request: Request, response: Response){
+        const users = await User.find().sort({folowers: 1});
+
+        return response.json({users})
+    }
+    async user(request: Request, response: Response){
+        const user = await User.findOne({_id: request.params.id});
+
+        if(!user){
+            return response.json({error: true, message: 'User not found'});
+        }
+        return response.json({ user })
     }
 }
 export default new UserController();

@@ -15,7 +15,10 @@ const User = new mongoose.Schema({
     },
     fileName: String,
     key: String,
-    fileUrl: String,
+    fileUrl: {
+        type: String,
+        default: "https://www.promoview.com.br/uploads/images/unnamed%2819%29.png"
+    },
     followers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     following: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
 })

@@ -11,5 +11,7 @@ Router.post('/register', UserController.register)
 Router.post('/session', UserController.session)
 Router.put('/updateImage/:id', upload.single('file'), UserController.updateImage)
 Router.put('/updateBody/:id', UserController.updateBody)
+Router.get('/', UserController.users);
+Router.get('/user/:id', UserController.user);
 
 export default Router;
