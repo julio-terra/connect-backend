@@ -1,14 +1,9 @@
-import {  Request, Response } from 'express';
+import { Request, Response } from 'express'
 import * as yup from 'yup';
-
-import Post from '../model/postModel';
-import User from '../model/userModel';
-
+import Comment from '../model/commentModel';
 import UploadImagesService from '../services/UploadImagesService';
-import DeleteImagesService from '../services/DeleteImagesService';
 
-
-class PostController {
+class CommentController{
     async new(request: Request, response: Response){
         const schema = yup.object().shape({
             user_id: yup.string().required(),
@@ -21,14 +16,14 @@ class PostController {
             return response.json({error: true, message: 'the fields were not filld'});
         }
         if(!request.file){
-            await Post.create({...request.body})
+            await Comment.create({...request.body})
             return response.json({message: 'Done'})
         }
         if(request.file){
             const uploadImagesService = new UploadImagesService();
             await uploadImagesService.execute(request.file);
             
-            await Post.create({
+            await Comment.create({
                 ...request.body,
                 fileName: request.file.filename,
                 key: request.file.filename,
@@ -40,33 +35,16 @@ class PostController {
             })
         }
     }
-    async delete(request: Request, response: Response){
-        const post = await Post.findOne({_id: request.params.id})
-
-        if(!post){
-            return response.json({error: true, message: 'this post has already been deleted'})
-        }
-        /* if(post.key){
-            const deleteImageService = new DeleteImagesService();
-            await deleteImageService.execute(post.key)
-        } */
-        post.remove().then(() =>{
-            return response .json({message: 'Done!'})
-        }).catch(() =>{
-            return response.json({error:true, message: 'An unexpected error occurred'})
-        })
-    }
     async list(request: Request, response: Response){
-        const user = await User.findOne({_id: request.params.user_id});
+        const comments = await Comment.find({ Comment_id: request.params.Comment_id });
 
-       const posts = await Post.find({user_id: {$in: user?.following}}).sort({createdAt: -1});
-
-        return response.json({posts})
+        return response.json({comments})
     }
-    async post(request: Request, response: Response){
-        const post = await Post.findOne({_id: request.params.id});
+    async comment(request: Request, response: Response){
+        const comment = await Comment.findOne({_id: request.params.id});
 
-        return response.json({post})
+        return response.json({comment})
     }
 }
-export default new PostController();
+
+export default new CommentController;

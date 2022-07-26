@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import User from '../model/userModel';
+import Post from '../model/postModel';
 import UploadImagesService from '../services/UploadImagesService';
 import DeleteImagesService from '../services/DeleteImagesService';
 
@@ -100,7 +101,47 @@ class UserController {
         if(!user){
             return response.json({error: true, message: 'User not found'});
         }
-        return response.json({ user })
+        const followers = await User.find({following: {$in: [user._id]}});
+        
+        return response.json({ user:  {...user, followers }});
+    }
+    async posts(request: Request, response: Response){
+        const posts = await Post.find({user_id: request.params.id}).sort({ createdAt: -1 });
+
+        return response.json({posts});
+    }
+    async follow(request: Request, response: Response){
+        const user = await User.findOne({_id: request.params.id});
+
+        if(!user){
+            return response.json({error: true, message: 'You need to login to follow users'});
+        }
+        
+        await User.findByIdAndUpdate(user._id, {
+            following: [...user.following, request.body.target_id]
+        }).then(async () =>{
+        const newuser = await User.findOne({_id: request.params.id});
+
+            return response.json({message: 'Done!', user: newuser})
+        }).catch(() => {
+            return response.json({error: true, message: "An unexpected error occurred"})
+        })
+    }
+    async unfollow(request: Request, response: Response){
+        const user = await User.findOne({_id: request.params.id});
+
+        if(!user){
+            return response.json({error: true, message: 'You need to login to follow users'});
+        }
+        
+        User.findByIdAndUpdate(user._id, {
+            following: user.following.filter(e => e != request.body.target_id)
+        }).then(async () =>{
+            const newuser = await User.findOne({_id: request.params.id});
+            return response.json({message: 'Done!', user: newuser})
+        }).catch(() => {
+            return response.json({error: true, message: "An unexpected error occurred"})
+        })
     }
 }
 export default new UserController();

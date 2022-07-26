@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 
 import userRoutes from './routes/user.routes';
 import postRoutes from './routes/post.routes';
+import commentsRouter from './routes/comment.routes';
 
 import './database';
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use('/users', userRoutes)
 app.use('/posts', postRoutes)
+app.use('/comments', commentsRouter)
 
 
 app.listen(PORT, () => {console.log('server running')})
