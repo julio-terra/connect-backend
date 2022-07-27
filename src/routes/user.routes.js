@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const userController_1 = __importDefault(require("../controllers/userController"));
+const multer_1 = __importDefault(require("multer"));
+const multer_2 = __importDefault(require("../config/multer"));
+const upload = (0, multer_1.default)(multer_2.default);
+const Router = express_1.default.Router();
+Router.post('/register', userController_1.default.register);
+Router.post('/session', userController_1.default.session);
+Router.put('/updateImage/:id', upload.single('file'), userController_1.default.updateImage);
+Router.put('/updateBody/:id', userController_1.default.updateBody);
+Router.put('/follow/:id', userController_1.default.follow);
+Router.put('/unfollow/:id', userController_1.default.unfollow);
+Router.get('/', userController_1.default.users);
+Router.get('/user/:id', userController_1.default.user);
+Router.get('/posts/:id', userController_1.default.posts);
+exports.default = Router;
