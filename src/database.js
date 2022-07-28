@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const URI = `mongodb+srv://julio:FlR2a08V4nwrQ2V0@cluster0.ei3ejos.mongodb.net/?retryWrites=true&w=majority`;
+const URI = `myuri`;
 mongoose_1.default.set('debug', true);
 mongoose_1.default
     .connect(URI)
